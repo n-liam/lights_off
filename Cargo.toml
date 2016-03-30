@@ -1,0 +1,9 @@
+[package]
+name = "lights_off"
+version = "0.1.0"
+authors = ["liamn"]
+
+[dependencies]
+rand = "0.3"
+
+#orbclient = {git = "https://github.com/redox-os/orbclient" }
