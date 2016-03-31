@@ -1,4 +1,7 @@
 extern crate rand;
+extern crate orbclient;
+
+use orbclient::{Color, EventOption, Window};
 
 use std::io;
 use rand::Rng;
@@ -546,9 +549,188 @@ fn game() {
 	play_loop(grid_size, puzzle_number);
 }
 
+
+
+
+
+fn square( window:  &mut Window, center: [i32;2], radius: i32, color: Color) {	
+	let mut x_2 = center[0] + radius;
+	for i in center[1]-radius..center[1]+radius+1 {
+		window.line(center[0], center[1], x_2, i,color);
+	}
+	x_2 = center[0] - radius;
+	for i in center[1]-radius..center[1]+radius {
+		window.line(center[0], center[1], x_2, i,color);
+	}
+	let mut y_2 = center[1] + radius;
+	for i in center[0]-radius..center[0]+radius {
+		window.line(center[0], center[1], i, y_2,color);
+	}
+	y_2 = center[1] - radius;
+	for i in center[0]-radius..center[0]+radius {
+		window.line(center[0], center[1], i, y_2,color);
+	}
+}
+
+fn plus(window: &mut Window, center: [i32;2], radius: i32, color: Color) {
+	let thickness = radius/6;
+	for x in center[0]-thickness..center[0]+thickness {
+		window.line(x, center[1]+radius, x, center[1]-radius, color);
+	} 
+	for y in center[1]-thickness..center[1]+thickness {
+		window.line(center[0]-radius, y, center[0]+radius,y,color);
+	}
+}
+
+fn draw_grid(window: &mut Window, puzzle: &Vec<bool>) {
+	// assumes 600x600 window
+	let blue: Color = Color::rgb(0,0,255); 
+	let grey: Color = Color::rgb(100,100,100);
+	for i in 0..25 {
+		let index = [i%5, i/5];
+		let center = [ 100+100*index[0] as i32 , 100+100*index[1] as i32];
+		if puzzle[i] {
+			square( window, center, 45, blue );
+		}
+		else {
+			plus( window, center, 30, grey );
+		}
+	}
+}
+
+fn draw_buttons(window: &mut Window) {
+    square(window, [100,565], 15, Color::rgb(240,50,50) );
+    square(window, [115,565], 15, Color::rgb(240,50,50) );
+    
+    square(window, [200,565], 15, Color::rgb(240,50,50) );
+    square(window, [215,565], 15, Color::rgb(240,50,50) );
+    
+    square(window, [300,565], 15, Color::rgb(240,50,50) );
+    square(window, [315,565], 15, Color::rgb(240,50,50) );
+}
+
+
+// this takes one coord (x or y) and spits out the index
+fn coord_to_index( z: i32 ) -> Result<usize, &'static str> {
+    match z {
+        55...145 => return Ok(0),
+        155...245 => return Ok(1),
+        255...345 => return Ok(2),
+        355...445 => return Ok(3),
+        455...545 => return Ok(4),
+        550...580 => return Ok(99),
+        _ => Err("Bad"),
+    }
+}
+
+enum Choice {
+    Restart,
+    RandomPuzzle,
+    Solve,
+}
+
 fn main() {
 
-    //shortest_solution(28111004);
-	game();
+
+	
+    let width = 600;
+    let height = 600;
+
+    let mut window = Window::new(-1,
+                                 -1,
+                                 width,
+                                 height,
+                                 "Lights Off")
+                         .unwrap();
+
+    window.set(Color::rgb(0,0,0));
+
+    let mut puzzle_number = get_random_number();
+    let mut puzzle = num_to_puzzle(puzzle_number,5);
+    let mut number_of_moves = 0;
+
+
+	loop {
+        let mut should_do_move: Result<[usize;2],_> = Err("Untouched");
+        let mut need_to_menu: Result<Choice,_> = Err("no");
+        for event in window.events() {
+            //println!("{:?}", event.to_option());
+            if let EventOption::Quit(_) = event.to_option() {
+                return;
+            }
+            else if let EventOption::Mouse(mouse_event) = event.to_option() {
+                if mouse_event.left_button {
+                    match (coord_to_index( mouse_event.x ), coord_to_index( mouse_event.y )) {
+                        (Ok(x_index), Ok(y_index)) => {
+                            match (x_index, y_index) {
+                                (0...5, 0...5) => should_do_move = Ok([x_index,y_index]),
+                                (0,99) => {
+                                    should_do_move = Err("no");
+                                    need_to_menu = Ok(Choice::Solve);
+                                }
+                                (1,99) => {
+                                    should_do_move = Err("no");
+                                    need_to_menu = Ok(Choice::Restart);
+                                }
+                                (2,99) => {
+                                    should_do_move = Err("no");
+                                    need_to_menu = Ok(Choice::RandomPuzzle);
+                                }
+                                _ => should_do_move = Err("no"),
+                            }
+                        }
+                        _ => should_do_move = Err("no"),
+                    }
+                }
+            }
+        }
+        
+        match should_do_move {
+            Ok(index) => {
+                do_move(&mut puzzle, 5, index);
+                number_of_moves += 1;
+            }
+            Err(_) => {},
+        }
+        
+        
+        if let Ok(choice) = need_to_menu{
+            match choice {
+                Choice::Solve   => print_solution(puzzle_number),
+                Choice::Restart => {
+                    puzzle = num_to_puzzle(puzzle_number, 5);
+                    number_of_moves = 0;
+                    println!("Restarting puzzle");
+                }
+                Choice::RandomPuzzle => {
+                    puzzle = num_to_puzzle( get_random_number(), 5);
+                    number_of_moves = 0;
+                    println!("Moving to a random puzzle");
+                }
+            }
+        }
+        
+        
+        
+        
+        window.clear();
+        draw_grid( &mut window, &puzzle);
+        draw_buttons(&mut window);
+        window.sync();
+        
+        if is_solved(&puzzle) {
+            println!("You solved puzzle {}, in {} moves", puzzle_number, number_of_moves );
+            println!("It is solvable in {} moves", number_of_moves_to_solve(puzzle_number));
+            println!("Moving on to next puzzle\n");
+            number_of_moves = 0;
+            puzzle_number = get_random_number();
+            puzzle = num_to_puzzle(puzzle_number,5);
+        }
+    }
+    
+    
+    
+    
+	//game();
 	
 }

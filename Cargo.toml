@@ -7,3 +7,5 @@ authors = ["liamn"]
 rand = "0.3"
 
 #orbclient = {git = "https://github.com/redox-os/orbclient" }
+orbclient = {path  = "orbclient" }
+#orbclient = {path  = "/home/Share/lights_off/orbclient" }
