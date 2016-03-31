@@ -3,12 +3,14 @@ extern crate orbclient;
 
 use orbclient::{Color, EventOption, Window};
 
-use std::io;
+//use std::io;
 use rand::Rng;
 
 //use std::io::prelude::*;
 //use std::io::SeekFrom;
 //use std::fs::File;
+
+
 
 /*fn disp_array( move_array: &[bool;25] ) {
     let mut vec = create_empty_grid(5);
@@ -207,7 +209,7 @@ fn get_random_number() -> usize {
 
 	return grid;
 }*/
-
+/*
 enum InnerMenuOption {
 	Help,
 	Quit,
@@ -219,9 +221,9 @@ enum InnerMenuResult {
 	Quit,
 	GoToMenu,
 	ShowSolution,
-}
+}*/
 
-
+/*
 fn inner_menu(option: InnerMenuOption) -> InnerMenuResult {
 	match option {
 		InnerMenuOption::Help => {
@@ -248,7 +250,7 @@ fn inner_menu(option: InnerMenuOption) -> InnerMenuResult {
 		}
 		InnerMenuOption::Solve => return InnerMenuResult::ShowSolution,
 	}
-}
+}*/
 
 fn xor_bool(a: bool, b:bool) -> bool {
 	match (a,b) {
@@ -269,7 +271,7 @@ fn xor_array(v: &[bool;25], u: &[bool;25]) -> [bool;25] {
     
 }
 
-
+/*
 fn display( grid: &Vec<bool>, grid_size: usize ) {	
 	
 
@@ -291,7 +293,7 @@ fn display( grid: &Vec<bool>, grid_size: usize ) {
 	}
 	println!("\n|\ny");
 
-}
+}*/
 
 // get gridsize as input from user
 
@@ -333,6 +335,7 @@ fn display( grid: &Vec<bool>, grid_size: usize ) {
 
 }*/
 
+/*
 fn get_puzzle_number() -> usize {
 	let puzzle_number: usize;
 	println!("Input a puzzle number (R for Random, Q to Quit):");
@@ -369,8 +372,9 @@ fn get_puzzle_number() -> usize {
 
 	
 	return puzzle_number;
-}
+}*/
 
+/*
 fn outer_menu() -> [usize;2] {
 	
 	// UNCOMMENT TO GET USER INPUT GRIDSIZE
@@ -387,9 +391,9 @@ fn outer_menu() -> [usize;2] {
 	
 	return [grid_size,puzzle_number];
 }
+*/
 
-
-
+/*
 // takes input from 1<= x,y <= grid_size,
 // outputs to 0<= x,y < grid_size
 // also deals with ingame inner_menu input
@@ -459,7 +463,7 @@ fn get_xy_input(grid_size: usize, puzzle_number: usize) -> [usize;2] {
 	
 	return xy;
 
-}
+}*/
 
 
 
@@ -510,7 +514,7 @@ fn create_empty_grid(grid_size: usize) -> Vec<bool> {
 	return grid;
 }
 
-
+/*
 fn play_loop(grid_size: usize, puzzle_number: usize) {
 	
 	let mut grid: Vec<bool> = num_to_puzzle(puzzle_number,grid_size);
@@ -537,8 +541,8 @@ fn play_loop(grid_size: usize, puzzle_number: usize) {
 	game();
 
 }
-
-
+*/
+/*
 fn game() {
 	
 	let outer_menu_results = outer_menu();
@@ -547,7 +551,7 @@ fn game() {
 	let puzzle_number = outer_menu_results[1];
 	
 	play_loop(grid_size, puzzle_number);
-}
+}*/
 
 
 
@@ -601,12 +605,29 @@ fn draw_grid(window: &mut Window, puzzle: &Vec<bool>) {
 fn draw_buttons(window: &mut Window) {
     square(window, [100,565], 15, Color::rgb(240,50,50) );
     square(window, [115,565], 15, Color::rgb(240,50,50) );
+    window.char(88,560,'S', Color::rgb(50,50,240));
+    window.char(96,560,'o', Color::rgb(50,50,240));
+    window.char(104,560,'l', Color::rgb(50,50,240));
+    window.char(112,560,'v', Color::rgb(50,50,240));
+    window.char(120,560,'e', Color::rgb(50,50,240));
+    
     
     square(window, [200,565], 15, Color::rgb(240,50,50) );
     square(window, [215,565], 15, Color::rgb(240,50,50) );
+    window.char(188,560,'R', Color::rgb(50,50,240));
+    window.char(196,560,'e', Color::rgb(50,50,240));
+    window.char(204,560,'s', Color::rgb(50,50,240));
+    window.char(212,560,'e', Color::rgb(50,50,240));
+    window.char(220,560,'t', Color::rgb(50,50,240));
     
     square(window, [300,565], 15, Color::rgb(240,50,50) );
     square(window, [315,565], 15, Color::rgb(240,50,50) );
+    window.char(286,560,'R', Color::rgb(50,50,240));
+    window.char(293,560,'a', Color::rgb(50,50,240));
+    window.char(300,560,'n', Color::rgb(50,50,240));
+    window.char(307,560,'d', Color::rgb(50,50,240));
+    window.char(314,560,'o', Color::rgb(50,50,240));
+    window.char(321,560,'m', Color::rgb(50,50,240));
 }
 
 
@@ -721,9 +742,9 @@ fn main() {
         if is_solved(&puzzle) {
             println!("You solved puzzle {}, in {} moves", puzzle_number, number_of_moves );
             println!("It is solvable in {} moves", number_of_moves_to_solve(puzzle_number));
-            println!("Moving on to next puzzle\n");
-            number_of_moves = 0;
             puzzle_number = get_random_number();
+            println!("Moving on to next puzzle: {}\n", puzzle_number);
+            number_of_moves = 0;
             puzzle = num_to_puzzle(puzzle_number,5);
         }
     }
