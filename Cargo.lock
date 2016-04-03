@@ -2,7 +2,7 @@
 name = "lights_off"
 version = "0.1.0"
 dependencies = [
- "orbclient 0.1.6",
+ "orbclient 0.1.8 (git+https://github.com/redox-os/orbclient)",
  "rand 0.3.14 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
@@ -32,7 +32,8 @@ dependencies = [
 
 [[package]]
 name = "orbclient"
-version = "0.1.6"
+version = "0.1.8"
+source = "git+https://github.com/redox-os/orbclient#28affe4f8ef6cf3c1bf4b122b9726f12ce17800f"
 dependencies = [
  "sdl2 0.9.1 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
